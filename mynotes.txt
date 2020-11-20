@@ -1,0 +1,278 @@
+aws ec2 describe-vpcs | grep -B20 "IsDefault\": true" | grep VpcId
+            "VpcId": "vpc-bb4b0cc3",
+
+
+aws ec2 create-security-group --group-name hw12 --description "HW12" --vpc-id vpc-bb4b0cc3   
+{
+    "GroupId": "sg-0314c835cd17241dc"
+}
+
+
+
+aws ec2 authorize-security-group-ingress --group-id sg-0314c835cd17241dc  --protocol tcp --port 22 --cidr 0.0.0.0/0
+aws ec2 authorize-security-group-ingress --group-id sg-0314c835cd17241dc --ip-permissions IpProtocol=icmp,FromPort=-1,ToPort=-1,IpRanges=[{CidrIp=0.0.0.0/0}]
+aws ec2 authorize-security-group-ingress --group-id sg-0314c835cd17241dc  --protocol tcp --port 0-65535 --cidr 0.0.0.0/0
+
+
+
+
+
+aws ec2 run-instances --image-id ami-0bc06212a56393ee1 --instance-type t2.medium --security-group-ids sg-0314c835cd17241dc --associate-public-ip-address --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}' --key-name w251_hw12 --count 3
+
+
+
+aws ec2 create-volume --volume-type gp2 --size 100 --availability-zone us-west-2c
+
+
+CWeyandt@CWeyandt-M33 xavier % aws ec2 create-volume --volume-type gp2 --size 100 --availability-zone us-west-2c
+{
+    "AvailabilityZone": "us-west-2c",
+    "CreateTime": "2020-11-15T15:27:31+00:00",
+    "Encrypted": false,
+    "Size": 100,
+    "SnapshotId": "",
+    "State": "creating",
+    "VolumeId": "vol-06de1fbc530bce7e1",
+    "Iops": 300,
+    "Tags": [],
+    "VolumeType": "gp2",
+    "MultiAttachEnabled": false
+}
+CWeyandt@CWeyandt-M33 xavier % aws ec2 create-volume --volume-type gp2 --size 100 --availability-zone us-west-2c
+{
+    "AvailabilityZone": "us-west-2c",
+    "CreateTime": "2020-11-15T15:27:35+00:00",
+    "Encrypted": false,
+    "Size": 100,
+    "SnapshotId": "",
+    "State": "creating",
+    "VolumeId": "vol-0165fddffb7cd3bbf",
+    "Iops": 300,
+    "Tags": [],
+    "VolumeType": "gp2",
+    "MultiAttachEnabled": false
+}
+CWeyandt@CWeyandt-M33 xavier % aws ec2 create-volume --volume-type gp2 --size 100 --availability-zone us-west-2c
+{
+    "AvailabilityZone": "us-west-2c",
+    "CreateTime": "2020-11-15T15:27:37+00:00",
+    "Encrypted": false,
+    "Size": 100,
+    "SnapshotId": "",
+    "State": "creating",
+    "VolumeId": "vol-0f3ad2b2ac48ffe73",
+    "Iops": 300,
+    "Tags": [],
+    "VolumeType": "gp2",
+    "MultiAttachEnabled": false
+}
+
+
+
+aws ec2 attach-volume --volume-id vol-06de1fbc530bce7e1 --instance-id i-0be5dad7018eb5e2d --device /dev/sdf
+aws ec2 attach-volume --volume-id vol-0165fddffb7cd3bbf --instance-id i-08eed43765e90f14a --device /dev/sdf
+aws ec2 attach-volume --volume-id vol-0f3ad2b2ac48ffe73 --instance-id i-08c364d6451600a51 --device /dev/sdf
+
+{
+    "AttachTime": "2020-11-15T15:29:15.970000+00:00",
+    "Device": "/dev/sdf",
+    "InstanceId": "i-0be5dad7018eb5e2d",
+    "State": "attaching",
+    "VolumeId": "vol-06de1fbc530bce7e1"
+}
+{
+    "AttachTime": "2020-11-15T15:29:17.203000+00:00",
+    "Device": "/dev/sdf",
+    "InstanceId": "i-08eed43765e90f14a",
+    "State": "attaching",
+    "VolumeId": "vol-0165fddffb7cd3bbf"
+}
+{
+    "AttachTime": "2020-11-15T15:29:18.448000+00:00",
+    "Device": "/dev/sdf",
+    "InstanceId": "i-08c364d6451600a51",
+    "State": "attaching",
+    "VolumeId": "vol-0f3ad2b2ac48ffe73"
+}
+
+
+
+ssh -i "w251_hw12.pem" centos@34.208.137.132
+ssh -i "w251_hw12.pem" centos@34.212.136.182
+ssh -i "w251_hw12.pem" centos@54.191.70.226
+
+
+The key fingerprint is:
+SHA256:7wuyCV6CuM1OxhGncTvwYq6jigqfc/D3TmkdaDKOP9k root@ip-172-31-13-175.us-west-2.compute.internal
+SHA256:UHcw5MU76iEO3PLlZ4fKD9bzIIgvwdH+AWMD4frR2kc root@ip-172-31-15-203.us-west-2.compute.internal
+SHA256:FC64Eqjiv+4/6gzXCR3j6WslJzd+eDjHKrI3djqhxkY root@ip-172-31-2-108.us-west-2.compute.internal
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdlwM9HU8oO/7nVh3O86Eg50ZFVCTUH7lPiua5IVAXrB1/7G9gQu1HB4bl7XW7nQ58G582NxP4OcsBcj1dOx7+nrMtlXKEwUVOLO1VEzjhFlBW3oAacZOWb0IldfCeHPUaKhyXKF/Wnbgt30Yx2XrMK7tLSCujE3qzX22rfQIsc9XTkhUuCyGc9uTRbOo1vMd8FYaGbwP7oBhw/0G8knkhqSwAGRlfWonPXAIDYBpNtAx+FRK+6aYpQ3VBjtNZBX/HD7JoFcHfDf5Q4118bhC3ptzaKWe9zo9JpU6r21651fykmmI2gYERsnYyknCE8YPAu1XnC/iscu5fxhOeqekF root@ip-172-31-13-175.us-west-2.compute.internal
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDhJFjcHOUw4KK2Gi4wrbWULTZDXSqdRo403u4ggVLITNVRz84JDb4UN7Xkb4JLvoL/fDrjcT5Hj9zLTmV06iuwLDRYRoNBoBYS9PMoqtLkn5jR7zWnlNzm5uU9RgoUq+Q+37G3ZcEN7tHxc+KjwNE5FcFavv9ld3p0nhuHA9DDCLQYNTpDqRTqsxYIpWR650S4cnzvq4MwDUEOf49GhmY1yX6WUaqmKN05pjaZKCu4KoG7zIuwjGOIafxy9Yr03FAKooPNDoilvXvf5jUgf8Iq7FK4zqX1Hv1BMXJo78och6ZL4hPFAL9T+ETtS4qlVa8Um8o3lySjptvapsW/81aF root@ip-172-31-15-203.us-west-2.compute.internal
+
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChQwN91hAQNSDGTEHgD8BGDj4bB3chAjy+BosZnr7bj5/zSxeyPVpAHTYjxhDRlEYBv+9vcr8iQDy6MNsPNaKlwLgLob2Lt1eRYzJIPVYUa2EnOqGN4IJpUEz/C3n8b7+zhFfKOQ7vL/4rRFrjdpkEfpYR+F//Wo8buNsfT5iprtJeGa2F/LW/60FU47SSNvDax8L29Usk5+O0QqZqTk5a2Kg31g/6mz34PVWbNNTpJ73YrP5xO1FdDDzaObdjTleUclP56OYSxAaJgX5/zezziKo9SmJEvducqwa00A2yIwMqkg80Td7bHsRCmUMNBkHbMA1kWsup5K9BPHxIW9Hx root@ip-172-31-2-108.us-west-2.compute.internal
+
+
+127.0.0.1 		localhost.localdomain localhost
+34.208.137.132  gpfs1
+34.212.136.182  gpfs2
+54.191.70.226  gpfs3
+
+/usr/lpp/mmfs/5.0.5.0/installer/spectrumscale setup -s IP-ADDRESS-OF-GPFS1  #(this command needs to be run just gpfs1)
+/usr/lpp/mmfs/5.0.5.0/installer/spectrumscale callhome disable   #(this command needs to be run just gpfs1)
+/usr/lpp/mmfs/5.0.5.0/installer/spectrumscale install  #(this command needs to be run just gpfs1)
+
+
+
+
+
+[root@ip-172-31-13-175 bin]# ./mmgetstate -a
+
+ Node number  Node name        GPFS state  
+-------------------------------------------
+       1      gpfs1            active
+       2      gpfs2            active
+       3      gpfs3            active
+[root@ip-172-31-13-175 bin]# ./mmlscluster
+
+GPFS cluster information
+========================
+  GPFS cluster name:         gpfs1.gpfs1
+  GPFS cluster id:           16897363966499577093
+  GPFS UID domain:           gpfs1.gpfs1
+  Remote shell command:      /usr/bin/ssh
+  Remote file copy command:  /usr/bin/scp
+  Repository type:           CCR
+
+ Node  Daemon node name  IP address     Admin node name  Designation
+---------------------------------------------------------------------
+   1   gpfs1             172.31.13.175  gpfs1            quorum-manager-perfmon
+   2   gpfs2             172.31.15.203  gpfs2            quorum-manager-perfmon
+   3   gpfs3             172.31.2.108   gpfs3            quorum-perfmon
+
+
+   [root@ip-172-31-13-175 bin]# lsblk
+NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+xvda    202:0    0   32G  0 disk 
+└─xvda1 202:1    0   32G  0 part /
+xvdf    202:80   0  100G  0 disk 
+
+
+[root@ip-172-31-13-175 bin]# ./mmcrnsd -F /root/diskfile.fpo
+mmcrnsd: Processing disk xvdf
+mmcrnsd: Processing disk xvdf
+mmcrnsd: Processing disk xvdf
+mmcrnsd: Propagating the cluster configuration data to all
+  affected nodes.  This is an asynchronous process.
+
+  [root@ip-172-31-13-175 bin]# ./mmlsnsd -m
+
+ Disk name       NSD volume ID      Device          Node name or Class       Remarks       
+-------------------------------------------------------------------------------------------
+ gpfs1nsd        AC1F0DAF5FB16155   /dev/xvdf       gpfs1                    server node
+ gpfs2nsd        AC1F0FCB5FB16156   /dev/xvdf       gpfs2                    server node
+ gpfs3nsd        AC1F026C5FB16157   /dev/xvdf       gpfs3                    server node
+
+
+
+
+
+[root@ip-172-31-13-175 bin]# ./mmcrfs gpfsfpo -F /root/diskfile.fpo -A yes -Q no -r 1 -R 1
+
+The following disks of gpfsfpo will be formatted on node ip-172-31-15-203.us-west-2.compute.internal:
+    gpfs1nsd: size 102400 MB
+    gpfs2nsd: size 102400 MB
+    gpfs3nsd: size 102400 MB
+Formatting file system ...
+Disks up to size 895.99 GB can be added to storage pool system.
+Creating Inode File
+  76 % complete on Sun Nov 15 17:12:54 2020
+ 100 % complete on Sun Nov 15 17:12:56 2020
+Creating Allocation Maps
+Creating Log Files
+  78 % complete on Sun Nov 15 17:13:01 2020
+ 100 % complete on Sun Nov 15 17:13:01 2020
+Clearing Inode Allocation Map
+Clearing Block Allocation Map
+Formatting Allocation Map for storage pool system
+Completed creation of file system /dev/gpfsfpo.
+mmcrfs: Propagating the cluster configuration data to all
+  affected nodes.  This is an asynchronous process.
+
+
+[root@ip-172-31-13-175 bin]# ./mmlsfs all
+
+File system attributes for /dev/gpfsfpo:
+========================================
+flag                value                    description
+------------------- ------------------------ -----------------------------------
+ -f                 8192                     Minimum fragment (subblock) size in bytes
+ -i                 4096                     Inode size in bytes
+ -I                 32768                    Indirect block size in bytes
+ -m                 1                        Default number of metadata replicas
+ -M                 2                        Maximum number of metadata replicas
+ -r                 1                        Default number of data replicas
+ -R                 1                        Maximum number of data replicas
+ -j                 cluster                  Block allocation type
+ -D                 nfs4                     File locking semantics in effect
+ -k                 nfs4                     ACL semantics in effect
+ -n                 32                       Estimated number of nodes that will mount file system
+ -B                 4194304                  Block size
+ -Q                 none                     Quotas accounting enabled
+                    none                     Quotas enforced
+                    none                     Default quotas enabled
+ --perfileset-quota No                       Per-fileset quota enforcement
+ --filesetdf        No                       Fileset df enabled?
+ -V                 23.00 (5.0.5.0)          File system version
+ --create-time      Sun Nov 15 17:12:53 2020 File system creation time
+ -z                 No                       Is DMAPI enabled?
+ -L                 33554432                 Logfile size
+ -E                 Yes                      Exact mtime mount option
+ -S                 relatime                 Suppress atime mount option
+ -K                 whenpossible             Strict replica allocation option
+ --fastea           Yes                      Fast external attributes enabled?
+ --encryption       No                       Encryption enabled?
+ --inode-limit      310272                   Maximum number of inodes
+ --log-replicas     0                        Number of log replicas
+ --is4KAligned      Yes                      is4KAligned?
+ --rapid-repair     Yes                      rapidRepair enabled?
+ --write-cache-threshold 0                   HAWC Threshold (max 65536)
+ --subblocks-per-full-block 512              Number of subblocks per full block
+ -P                 system                   Disk storage pools in file system
+ --file-audit-log   No                       File Audit Logging enabled?
+ --maintenance-mode No                       Maintenance Mode enabled?
+ -d                 gpfs1nsd;gpfs2nsd;gpfs3nsd  Disks in file system
+ -A                 yes                      Automatic mount option
+ -o                 none                     Additional mount options
+ -T                 /gpfs/gpfsfpo            Default mount point
+ --mount-priority   0                        Mount priority
+
+
+ [root@ip-172-31-13-175 bin]# lsblk
+NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+xvda    202:0    0   32G  0 disk 
+└─xvda1 202:1    0   32G  0 part /
+xvdf    202:80   0  100G  0 disk 
+└─xvdf1 202:81   0  100G  0 part 
+
+
+
+
+[root@ip-172-31-13-175 gpfsfpo]# df -h .
+Filesystem      Size  Used Avail Use% Mounted on
+gpfsfpo         300G   17G  284G   6% /gpfs/gpfsfpo
+
+
+[root@ip-172-31-13-175 gpfsfpo]# ssh gpfs2 'ls -l /gpfs/gpfsfpo'
+total 0
+-rw-r--r--. 1 root root 0 Nov 15 17:15 aa
+
+
+AUS dataset crawler 	start: Nov 15 17:47 	finish: Nov 15 19:24	time: 1h37m
+US dataset crawler 		start: Nov 15 17:42		finish: Nov 15 20:13	time: 
+Reddit crawler			start: 		finish:
+
+
+
