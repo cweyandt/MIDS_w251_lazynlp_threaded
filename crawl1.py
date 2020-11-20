@@ -19,7 +19,7 @@ class MultiThreadScraper:
 
         self.link_file = link_file
         self.output_path = output_path
-        self.pool = ThreadPoolExecutor(max_workers=40)
+        self.pool = ThreadPoolExecutor(max_workers=20)
         self.to_crawl = Queue()
 
         self.index_file = os.path.join(output_path, 'index.urls')
@@ -89,7 +89,6 @@ class MultiThreadScraper:
                 job.add_done_callback(self.post_scrape_callback)
 
             self.idx += 1
-        self.links.close()
 
 
     def pool_link(self, link, idx):
