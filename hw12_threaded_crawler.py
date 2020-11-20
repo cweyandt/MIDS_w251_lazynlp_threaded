@@ -19,7 +19,7 @@ class MultiThreadScraper:
 
         self.link_file = link_file
         self.output_path = output_path
-        self.pool = ThreadPoolExecutor(max_workers=10)
+        self.pool = ThreadPoolExecutor(max_workers=40)
         self.to_crawl = Queue()
 
         self.index_file = os.path.join(output_path, 'index.urls')
@@ -129,6 +129,6 @@ class MultiThreadScraper:
 
 
 if __name__ == '__main__':
-    s = MultiThreadScraper("./reddit_urls/reddit2.txt","./reddit_dataset")
+    s = MultiThreadScraper("./reddit_urls/reddit2.txt","./reddit_dataset/2")
     s.process_links()    
 
