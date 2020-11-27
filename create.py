@@ -41,6 +41,7 @@ def filter_files(files,
             the first line is the url
 
     """
+    print(f'Sorting {str(len(files))}')
     sorted_files = sort_files_by_size(files)
     bf = BloomFilter(capacity=capacity, error_rate=error_rate)
     dupped_files = open('dupped_files.list', 'w')

@@ -195,11 +195,12 @@ def estimate_overlap_bf(bf, target_file, gran='word', n=8, header=0):
             total += 1
 
         line = f.readline()
-
-    result = seen / total
-    print('{} seen out of {}: {}'.format(seen, total, result))
-    return result
-
+    try:
+        result = seen / total
+        print('{} seen out of {}: {}'.format(seen, total, result))
+        return result
+    except:
+        return 1
 
 def file_stats(file):
     """ Return statistics about line lengths and average character per words
